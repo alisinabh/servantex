@@ -1,0 +1,36 @@
+stages:
+ - test
+ - build
+
+
+# Pick zero or more services to be used on all builds.
+# Only needed when using a docker container to run your tests in.
+# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
+services:
+  - postgres:latest
+
+variables:
+    http_proxy: "http://192.168.3.19:8888"
+    https_proxy: "http://192.168.3.19:8888"
+
+mix:
+  stage: test
+  image: elixir:latest
+  variables:
+    MIX_ENV: "test"
+  script:
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
+  - curl 'https://api.ipify.org?format=json'
+  - mix test
+  
+build:
+  stage: build
+  only:
+  - master
+  image: docker:dind
+  variables:
+    MIX_ENV: "prod"
+  script:
+  - docker build -t localhost.k8s1-aec.local:30317/servantex:"${CI_COMMIT_SHA:0:8}" .
