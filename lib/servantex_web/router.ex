@@ -2,6 +2,7 @@ defmodule ServantexWeb.Router do
   use ServantexWeb, :router
 
   alias ServantexWeb.Plugs.ThingAuthPlug
+  alias ServantexWeb.Plugs.ActionsAuthPlug
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -18,6 +19,7 @@ defmodule ServantexWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug ActionsAuthPlug
   end
 
   scope "/", ServantexWeb do

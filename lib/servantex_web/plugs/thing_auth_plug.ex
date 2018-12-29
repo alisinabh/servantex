@@ -16,19 +16,17 @@ defmodule ServantexWeb.Plugs.ThingAuthPlug do
   def call(conn, _opts) do
     with [auth_data | _] <- get_req_header(conn, "authorization"),
          [user_id, controller_secret] <- String.split(auth_data, ":"),
-         [fw_version_str | _] <- get_req_header(conn, "servantex_fw"),
-         {fw_version, _} <- Integer.parse(fw_version_str),
          {:valid, ^user_id, controller_id} <-
            DeviceManager.check_controller_auth(user_id, controller_secret) do
       conn
       |> put_private(@auth_conn_priv_key, %{
         user_id: user_id,
         controller_id: controller_id,
-        fw_version: fw_version
+        fw_version: 1
       })
     else
       auth_error ->
-        Logger.debug("Auth error: #{inspect(auth_error)}")
+        Logger.info("Auth error: #{inspect(auth_error)}")
 
         conn
         |> resp(401, "UNAUTHORIZED")

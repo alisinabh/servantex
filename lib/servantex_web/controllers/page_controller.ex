@@ -9,7 +9,7 @@ defmodule ServantexWeb.PageController do
 
   def google_auth(conn, %{
         "client_id" => client_id,
-        "redirect_url" => redirect_url,
+        "redirect_uri" => redirect_url,
         "state" => state
       }) do
     render(conn, "login_oauth.html",
@@ -30,7 +30,8 @@ defmodule ServantexWeb.PageController do
       {:ok, token} = Accounts.make_service_token(email, "control", client_id)
 
       redirect_url =
-        redirect_url <> "#acceess_token=#{token.token}&token_type=bearer&state=#{state}"
+        redirect_url <>
+          "#access_token=#{token.user_id}:#{token.token}&token_type=bearer&state=#{state}"
 
       conn
       |> redirect(external: redirect_url)

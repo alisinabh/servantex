@@ -377,7 +377,11 @@ defmodule Servantex.DeviceManager do
   def get_trait_status(%DeviceControl{
         trait: "action.devices.traits.OnOff",
         controller_id: controller_id,
-        action: %{"pin" => pin_number, "on" => on_value, "off" => off_value}
+        action: %{
+          "pin" => pin_number,
+          "on" => %{"value" => on_value},
+          "off" => %{"value" => off_value}
+        }
       }) do
     pin_number = to_string(pin_number)
     %{^pin_number => status} = get_controller_status(controller_id)
@@ -430,7 +434,13 @@ defmodule Servantex.DeviceManager do
 
     extras = controller.extras
     status = extras["status"]
-    status = Map.put(status, to_string(pin_number), value)
+
+    status =
+      Map.put(
+        status,
+        to_string(pin_number),
+        Map.put(value, "lock_until", System.system_time(:seconds) + 4)
+      )
 
     {:ok, _controller} =
       update_controller(controller, %{extras: Map.put(extras, "status", status)})

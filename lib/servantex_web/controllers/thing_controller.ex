@@ -42,7 +42,15 @@ defmodule ServantexWeb.ThingController do
 
   defp process_updates(status, [{<<"pin", pin::binary>>, str_value} | t]) do
     {value, _} = Integer.parse(str_value)
-    status = Map.put(status, pin, %{"value" => value})
+    min_change_avail_time = status[pin]["lock_until"] || 0
+
+    status =
+      if min_change_avail_time < System.system_time(:seconds) do
+        Map.put(status, pin, %{"value" => value})
+      else
+        status
+      end
+
     process_updates(status, t)
   end
 

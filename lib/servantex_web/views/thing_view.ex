@@ -41,6 +41,9 @@ defmodule ServantexWeb.ThingView do
 
         %{"mode" => "input"} ->
           {2, 0, pin["ref_pin"] || -1}
+
+        %{"mode" => "input_pullup"} ->
+          {3, 0, pin["ref_pin"] || -1}
       end
 
     %{"p" => pin["pin"], "m" => mode, "v" => default, "r" => ref_pin}

@@ -36,7 +36,7 @@ defmodule ServantexWeb.GactionView do
 
     %{
       "id" => device.id,
-      "name" => device.name,
+      "name" => %{"name" => device.name},
       "type" => device.type,
       "traits" => traits,
       "roomHint" => device.extras["room"] || nil,

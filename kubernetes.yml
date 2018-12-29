@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: servantex-service
+  labels:
+    app: servantex
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 4000
+  selector:
+    app: servantex
+    tier: front
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: servantex
+  labels:
+    app: servantex
+    tier: front
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: servantex
+        tier: front
+    spec:
+      containers:
+      - name: servantex-container
+        image: localhost.k8s1-aec.local:30317/servantex:11
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4000
+        env:
+        - name: "SECRET_KEY_BASE"
+          valueFrom:
+            secretKeyRef:
+              name: servantex-secrets
+              key: secret-key-base
+        - name: "DATABASE_URL"
+          valueFrom:
+            secretKeyRef:
+              name: servantex-secrets
+              key: database-url
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: servantex-api
+spec:
+  rules:
+  - host: home.alisinabh.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: servantex-service
+          servicePort: web
+  - host: home-insecure.alisinabh.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: servantex-service
+          servicePort: web
