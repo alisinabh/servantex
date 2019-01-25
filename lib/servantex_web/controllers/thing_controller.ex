@@ -7,7 +7,6 @@ defmodule ServantexWeb.ThingController do
   alias Servantex.DeviceManager
 
   def pin_modes(conn, _params) do
-    IO.puts("pin_modes call")
     {:ok, _user_id, controller_id, fw_version} = ThingAuthPlug.get_controller_info(conn)
 
     controller = DeviceManager.get_controller!(controller_id)

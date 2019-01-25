@@ -9,6 +9,8 @@ defmodule Servantex.DeviceManager do
   alias Servantex.DeviceManager.Controller
 
   @command_trait Application.get_env(:servantex, :command_trait)
+  # Lock timeout of pins in seconds. In this duration no change will be applied to the pin.
+  @pin_lock_timeout 3
 
   @doc """
   Returns the list of controllers.
@@ -315,6 +317,19 @@ defmodule Servantex.DeviceManager do
     end
   end
 
+  @doc "Returns the id of the device owner"
+  def get_device_owner_id(device_id) do
+    query =
+      from d in Device,
+        where: d.id == ^device_id,
+        select: d.user_id
+
+    Repo.one(query)
+  end
+
+  @doc """
+  Returns extras field of a controller
+  """
   def get_controller_extras(controller_id) do
     query =
       from c in Controller,
@@ -324,6 +339,9 @@ defmodule Servantex.DeviceManager do
     Repo.one(query)
   end
 
+  @doc """
+  Returns `status` field fom `extras` field of a controller.
+  """
   def get_controller_status(controller_id) do
     extras = get_controller_extras(controller_id)
     extras["status"] || %{}
@@ -340,6 +358,9 @@ defmodule Servantex.DeviceManager do
     Repo.all(query)
   end
 
+  @doc """
+  Returns current status information of device.
+  """
   def get_device_status(user_id, device_id) do
     query =
       from d in Device,
@@ -357,6 +378,9 @@ defmodule Servantex.DeviceManager do
     Enum.reduce(device_status, %{}, fn x, acc -> Map.merge(x, acc) end)
   end
 
+  @doc """
+  Lists DeviceControlls of a specific device.
+  """
   def get_device_traits(device_id) do
     query =
       from d in DeviceControl,
@@ -365,6 +389,9 @@ defmodule Servantex.DeviceManager do
     Repo.all(query)
   end
 
+  @doc """
+  Lists google traits of a device.
+  """
   def list_device_traits(device_id) do
     query =
       from d in DeviceControl,
@@ -374,6 +401,12 @@ defmodule Servantex.DeviceManager do
     Repo.all(query)
   end
 
+  @doc """
+  Fetches status of a given DeviceControll (Trait)
+
+  Currently supports:
+  - OnOff
+  """
   def get_trait_status(%DeviceControl{
         trait: "action.devices.traits.OnOff",
         controller_id: controller_id,
@@ -398,6 +431,9 @@ defmodule Servantex.DeviceManager do
     end
   end
 
+  @doc """
+  Applies a trait command on a device.
+  """
   def apply_trait_action(device_id, command, params) do
     trait = @command_trait[command]
 
@@ -408,11 +444,14 @@ defmodule Servantex.DeviceManager do
     traits = Repo.all(query)
 
     for device_trait <- traits do
-      apply_trait_action(device_trait, params)
+      do_apply_trait_action(device_trait, params)
     end
   end
 
-  def apply_trait_action(
+  @doc """
+  Applies the specific trait action of a command.
+  """
+  def do_apply_trait_action(
         %DeviceControl{
           trait: "action.devices.traits.OnOff",
           controller_id: controller_id,
@@ -429,6 +468,9 @@ defmodule Servantex.DeviceManager do
     set_controller_pin(controller_id, pin_number, value)
   end
 
+  @doc """
+  Changes a controller pin state.
+  """
   def set_controller_pin(controller_id, pin_number, value) do
     controller = get_controller!(controller_id)
 
@@ -439,7 +481,7 @@ defmodule Servantex.DeviceManager do
       Map.put(
         status,
         to_string(pin_number),
-        Map.put(value, "lock_until", System.system_time(:seconds) + 4)
+        Map.put(value, "lock_until", System.system_time(:seconds) + @pin_lock_timeout)
       )
 
     {:ok, _controller} =

@@ -12,7 +12,7 @@ defmodule ServantexWeb.ThingView do
     %{"pins" => pin_modes}
   end
 
-  def render("pin_status.json", %{fw_version: fw_version, controller: controller}) do
+  def render("pin_status.json", %{fw_version: _fw_version, controller: controller}) do
     db_states = Map.to_list(controller.extras["status"])
 
     states =

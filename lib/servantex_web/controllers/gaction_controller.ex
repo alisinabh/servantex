@@ -62,14 +62,15 @@ defmodule ServantexWeb.GactionController do
     render(conn, "execute.json", conn: conn, command_devices_grouped: command_devices_grouped)
   end
 
-  defp execute_command(_user_id, %{
+  defp execute_command(user_id, %{
          "devices" => devices,
          "execution" => execs
        }) do
     device_ids = get_device_ids(devices)
-    # TODO: Ensure device ownership
+
     for %{"command" => trait, "params" => params} <- execs do
       for device_id <- device_ids do
+        ^user_id = DeviceManager.get_device_owner_id(device_id)
         DeviceManager.apply_trait_action(device_id, trait, params)
       end
     end
