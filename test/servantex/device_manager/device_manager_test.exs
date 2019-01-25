@@ -6,8 +6,20 @@ defmodule Servantex.DeviceManagerTest do
   describe "controllers" do
     alias Servantex.DeviceManager.Controller
 
-    @valid_attrs %{extras: %{}, is_enabled: true, name: "some name", secret: "some secret", type: "some type"}
-    @update_attrs %{extras: %{}, is_enabled: false, name: "some updated name", secret: "some updated secret", type: "some updated type"}
+    @valid_attrs %{
+      extras: %{},
+      is_enabled: true,
+      name: "some name",
+      secret: "some secret",
+      type: "some type"
+    }
+    @update_attrs %{
+      extras: %{},
+      is_enabled: false,
+      name: "some updated name",
+      secret: "some updated secret",
+      type: "some updated type"
+    }
     @invalid_attrs %{extras: nil, is_enabled: nil, name: nil, secret: nil, type: nil}
 
     def controller_fixture(attrs \\ %{}) do
@@ -44,7 +56,10 @@ defmodule Servantex.DeviceManagerTest do
 
     test "update_controller/2 with valid data updates the controller" do
       controller = controller_fixture()
-      assert {:ok, %Controller{} = controller} = DeviceManager.update_controller(controller, @update_attrs)
+
+      assert {:ok, %Controller{} = controller} =
+               DeviceManager.update_controller(controller, @update_attrs)
+
       assert controller.extras == %{}
       assert controller.is_enabled == false
       assert controller.name == "some updated name"
@@ -54,7 +69,10 @@ defmodule Servantex.DeviceManagerTest do
 
     test "update_controller/2 with invalid data returns error changeset" do
       controller = controller_fixture()
-      assert {:error, %Ecto.Changeset{}} = DeviceManager.update_controller(controller, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               DeviceManager.update_controller(controller, @invalid_attrs)
+
       assert controller == DeviceManager.get_controller!(controller.id)
     end
 
@@ -73,9 +91,14 @@ defmodule Servantex.DeviceManagerTest do
   describe "devices" do
     alias Servantex.DeviceManager.Device
 
-    @valid_attrs %{extras: %{}, is_enabled: true, name: "some name", traits: [], type: "some type"}
-    @update_attrs %{extras: %{}, is_enabled: false, name: "some updated name", traits: [], type: "some updated type"}
-    @invalid_attrs %{extras: nil, is_enabled: nil, name: nil, traits: nil, type: nil}
+    @valid_attrs %{extras: %{}, is_enabled: true, name: "some name", type: "some type"}
+    @update_attrs %{
+      extras: %{},
+      is_enabled: false,
+      name: "some updated name",
+      type: "some updated type"
+    }
+    @invalid_attrs %{extras: nil, is_enabled: nil, name: nil, type: nil}
 
     def device_fixture(attrs \\ %{}) do
       {:ok, device} =
@@ -101,7 +124,6 @@ defmodule Servantex.DeviceManagerTest do
       assert device.extras == %{}
       assert device.is_enabled == true
       assert device.name == "some name"
-      assert device.traits == []
       assert device.type == "some type"
     end
 
@@ -115,7 +137,6 @@ defmodule Servantex.DeviceManagerTest do
       assert device.extras == %{}
       assert device.is_enabled == false
       assert device.name == "some updated name"
-      assert device.traits == []
       assert device.type == "some updated type"
     end
 
@@ -164,7 +185,9 @@ defmodule Servantex.DeviceManagerTest do
     end
 
     test "create_device_control/1 with valid data creates a device_control" do
-      assert {:ok, %DeviceControl{} = device_control} = DeviceManager.create_device_control(@valid_attrs)
+      assert {:ok, %DeviceControl{} = device_control} =
+               DeviceManager.create_device_control(@valid_attrs)
+
       assert device_control.action == %{}
       assert device_control.trait == "some trait"
     end
@@ -175,21 +198,30 @@ defmodule Servantex.DeviceManagerTest do
 
     test "update_device_control/2 with valid data updates the device_control" do
       device_control = device_control_fixture()
-      assert {:ok, %DeviceControl{} = device_control} = DeviceManager.update_device_control(device_control, @update_attrs)
+
+      assert {:ok, %DeviceControl{} = device_control} =
+               DeviceManager.update_device_control(device_control, @update_attrs)
+
       assert device_control.action == %{}
       assert device_control.trait == "some updated trait"
     end
 
     test "update_device_control/2 with invalid data returns error changeset" do
       device_control = device_control_fixture()
-      assert {:error, %Ecto.Changeset{}} = DeviceManager.update_device_control(device_control, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               DeviceManager.update_device_control(device_control, @invalid_attrs)
+
       assert device_control == DeviceManager.get_device_control!(device_control.id)
     end
 
     test "delete_device_control/1 deletes the device_control" do
       device_control = device_control_fixture()
       assert {:ok, %DeviceControl{}} = DeviceManager.delete_device_control(device_control)
-      assert_raise Ecto.NoResultsError, fn -> DeviceManager.get_device_control!(device_control.id) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        DeviceManager.get_device_control!(device_control.id)
+      end
     end
 
     test "change_device_control/1 returns a device_control changeset" do

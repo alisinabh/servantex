@@ -17,6 +17,6 @@ defmodule Servantex.DeviceManager.DeviceControl do
   def changeset(device_control, attrs) do
     device_control
     |> cast(attrs, [:trait, :action, :device_id, :controller_id])
-    |> validate_required([:trait, :action, :device_id, :controller_id])
+    |> validate_required([:trait, :action])
   end
 end

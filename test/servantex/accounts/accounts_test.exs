@@ -6,9 +6,19 @@ defmodule Servantex.AccountsTest do
   describe "users" do
     alias Servantex.Accounts.User
 
-    @valid_attrs %{email: "some email", is_enabled: true, max_devices: 42, password_hash: "some password_hash"}
-    @update_attrs %{email: "some updated email", is_enabled: false, max_devices: 43, password_hash: "some updated password_hash"}
-    @invalid_attrs %{email: nil, is_enabled: nil, max_devices: nil, password_hash: nil}
+    @valid_attrs %{
+      email: "some email",
+      is_enabled: true,
+      max_devices: 42,
+      password: "some password"
+    }
+    @update_attrs %{
+      email: "some updated email",
+      is_enabled: false,
+      max_devices: 43,
+      password: "some updated password"
+    }
+    @invalid_attrs %{email: nil, is_enabled: nil, max_devices: nil, password: nil}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
@@ -34,7 +44,7 @@ defmodule Servantex.AccountsTest do
       assert user.email == "some email"
       assert user.is_enabled == true
       assert user.max_devices == 42
-      assert user.password_hash == "some password_hash"
+      refute is_nil(user.password_hash)
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -47,7 +57,7 @@ defmodule Servantex.AccountsTest do
       assert user.email == "some updated email"
       assert user.is_enabled == false
       assert user.max_devices == 43
-      assert user.password_hash == "some updated password_hash"
+      refute is_nil(user.password_hash)
     end
 
     test "update_user/2 with invalid data returns error changeset" do
@@ -72,7 +82,11 @@ defmodule Servantex.AccountsTest do
     alias Servantex.Accounts.Token
 
     @valid_attrs %{client_id: "some client_id", token: "some token", type: "some type"}
-    @update_attrs %{client_id: "some updated client_id", token: "some updated token", type: "some updated type"}
+    @update_attrs %{
+      client_id: "some updated client_id",
+      token: "some updated token",
+      type: "some updated type"
+    }
     @invalid_attrs %{client_id: nil, token: nil, type: nil}
 
     def token_fixture(attrs \\ %{}) do

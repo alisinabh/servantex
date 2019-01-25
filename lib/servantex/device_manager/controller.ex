@@ -19,7 +19,7 @@ defmodule Servantex.DeviceManager.Controller do
   def changeset(controller, attrs) do
     controller
     |> cast(attrs, [:type, :name, :secret, :user_id, :extras, :is_enabled])
-    |> validate_required([:type, :name, :secret, :user_id, :extras, :is_enabled])
+    |> validate_required([:type, :name, :secret, :extras, :is_enabled])
     |> unique_constraint(:secret, name: :user_id_secret_index)
   end
 end

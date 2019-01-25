@@ -18,6 +18,6 @@ defmodule Servantex.DeviceManager.Device do
   def changeset(device, attrs) do
     device
     |> cast(attrs, [:name, :type, :extras, :is_enabled, :user_id])
-    |> validate_required([:name, :type, :is_enabled, :user_id])
+    |> validate_required([:name, :type, :is_enabled])
   end
 end

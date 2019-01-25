@@ -18,7 +18,7 @@ defmodule Servantex.Accounts.Token do
   def changeset(token, attrs) do
     token
     |> cast(attrs, [:type, :client_id, :token, :user_id])
-    |> validate_required([:type, :client_id, :token, :user_id])
+    |> validate_required([:type, :client_id, :token])
     |> unique_constraint(:token)
   end
 end
