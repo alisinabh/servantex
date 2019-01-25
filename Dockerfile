@@ -9,7 +9,7 @@ WORKDIR /app
 
 ENV MIX_ENV=prod
 
-#RUN mix deps.get
+RUN mix deps.get
 RUN mix compile
 
 CMD ["/app/entrypoint.sh"]

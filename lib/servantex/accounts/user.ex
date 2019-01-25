@@ -41,7 +41,6 @@ defmodule Servantex.Accounts.User do
   defp valid_password?(_), do: {:error, "The password is too short"}
 
   defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
-    IO.puts("test")
     change(changeset, Comeonin.Argon2.add_hash(password))
   end
 
